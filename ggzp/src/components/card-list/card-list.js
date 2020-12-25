@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import { Card, WhiteSpace, WingBlank } from 'antd-mobile'
+import { withRouter } from 'react-router-dom'
 import PropTypes from 'prop-types'
-export default class CardList extends Component {
+class CardList extends Component {
 	static propTypes = {
 		userList: PropTypes.array
 	}
@@ -10,7 +11,7 @@ export default class CardList extends Component {
 		return (
 			<div className='card-list'>
 				{userList.map((val, index) => (
-					<div key={index}>
+					<div key={index} onClick={() => this.props.history.push(`/chat/${val._id}`)}>
 						<WingBlank>
 						<WhiteSpace />
 						<Card>
@@ -32,3 +33,4 @@ export default class CardList extends Component {
 		)
 	}
 }
+export default withRouter(CardList)

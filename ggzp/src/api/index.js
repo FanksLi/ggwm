@@ -10,3 +10,5 @@ export const reqUpdata = (userInfo) => ajax('/updata', userInfo, 'POST')
 export const reqUser = () => ajax('/user')
 // 获取用户列表
 export const reqUserList = (type) => ajax('/list', type)
+// 获取消息列表
+export const reqChatList = () => ajax('/msglist')

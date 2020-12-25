@@ -19,6 +19,7 @@
     "redux": "^3.7.2",
     "redux-thunk": "^2.3.0",
     "remove": "^0.1.5",
+    "socket.io-client": "^3.0.4",
     "web-vitals": "^0.2.4"
   },
   "scripts": {

@@ -4,7 +4,7 @@ var md5 = require('blueimp-md5')
 
 const filter = { password: 0, __v: 0 }
 
-var { UserModel } = require('../db/models.js')
+var { UserModel, ChatModel } = require('../db/models.js')
 
 /* GET home page. */
 router.post('/register', function (req, res) {
@@ -64,6 +64,22 @@ router.get('/list', function (req, res) {
 			res.send({code: 1, msg: '网络繁忙，稍后再试'})
 		}
 		res.send({code: 0, userList})
+	})
+})
+router.get('/msglist', function (req, res) {
+	const userId = req.cookies.id
+	UserModel.find(function (err, user) {
+		const users = {}
+		user.forEach(val => {
+			users[val._id] = { username: val.username, header: val.header }
+		})
+		ChatModel.find({'$or':[{from: userId}, {to: userId}]}, filter, function (err, chatMsgs) {
+			console.log(chatMsgs)
+			if (err) {
+				return res.send({code: 1, msg: '网络繁忙稍后再试试吧！'})
+			}
+			res.send({code: 0, data:{users, chatMsgs}})
+		})
 	})
 })
 module.exports = router;
