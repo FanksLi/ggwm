@@ -12,3 +12,5 @@ export const reqUser = () => ajax('/user')
 export const reqUserList = (type) => ajax('/list', type)
 // 获取消息列表
 export const reqChatList = () => ajax('/msglist')
+// 更新已读消息
+export const updataMsg = (from) => ajax('/readmsg', from, 'POST')

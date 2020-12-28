@@ -25,7 +25,6 @@ router.post('/login', function (req, res) {
 	UserModel.findOne({ username, password: md5(password) }, filter, function (err, user) {
 		if(user) {
 			res.cookie('id', user._id, { maxAge: 1000*60*60*24 })
-			console.log(user)
 			res.send({ code: 0, data: { user } })
 		} else {
 			res.send({ code: 1, msg: '账号或密码有误！'})
@@ -66,6 +65,7 @@ router.get('/list', function (req, res) {
 		res.send({code: 0, userList})
 	})
 })
+// 获取消息列表
 router.get('/msglist', function (req, res) {
 	const userId = req.cookies.id
 	UserModel.find(function (err, user) {
@@ -74,12 +74,21 @@ router.get('/msglist', function (req, res) {
 			users[val._id] = { username: val.username, header: val.header }
 		})
 		ChatModel.find({'$or':[{from: userId}, {to: userId}]}, filter, function (err, chatMsgs) {
-			console.log(chatMsgs)
 			if (err) {
 				return res.send({code: 1, msg: '网络繁忙稍后再试试吧！'})
 			}
 			res.send({code: 0, data:{users, chatMsgs}})
 		})
+	})
+})
+// 更新已读消息
+router.post('/readmsg', function (req, res) {
+	const to = req.cookies.id
+	const from = req.body.from
+	console.log(from, to)
+	ChatModel.update({from, to, read: false}, {read: true}, {multi: true}, function (err, doc) {
+		console.log('updata', doc)
+		res.send({code: 0, data: doc.nModified})
 	})
 })
 module.exports = router;

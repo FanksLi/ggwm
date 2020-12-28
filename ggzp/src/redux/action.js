@@ -6,7 +6,8 @@ import {
 	REQ_USER_LIST,
 	REQ_USER_LIST_ERR,
 	RECEIVE_CHAT,
-	REQ_CHAT_LIST
+	REQ_CHAT_LIST,
+	UPDATA_READ_MSG
 } from './actionType.js'
 import {
 	reqLogin,
@@ -14,7 +15,8 @@ import {
 	reqUpdata,
 	reqUser,
 	reqUserList,
-	reqChatList
+	reqChatList,
+	updataMsg
 } from '../api/index.js'
 import io from 'socket.io-client'
 
@@ -31,10 +33,13 @@ function initIo (dispatch, userId) {
 	getChatList(dispatch, userId)
 	if (!io.socket) {
 		console.log(123)
-		io.socket = io('ws://localhost:3000')
-		io.socket.on('receiveMsg', function (data) {
-			dispatch(receiveChat(data))
-			console.log('receiveMsg', data)
+		io.socket = io('http://localhost:3000')
+		io.socket.on('receiveMsg', function (chatMsg) {
+			getChatList(dispatch, userId)
+			if(chatMsg.from===userId || chatMsg.to===userId) {
+				dispatch(receiveChat(chatMsg, userId))
+				console.log('receiveMsg', chatMsg)
+			}
 		})
 	}
 }
@@ -48,9 +53,11 @@ export const registerInfo = (msg) => ({type: REGISTER_INFO, msg: msg})
 const getUserList = (userList) => ({type: REQ_USER_LIST, data: userList})
 const userListErr = (msg) => ({type: REQ_USER_LIST_ERR, data: msg})
 // 接收信息
-const receiveChat = (msg) => ({type: RECEIVE_CHAT, data: msg})
+const receiveChat = (chatMsg, userId) => ({type: RECEIVE_CHAT, data: {chatMsg, userId}})
 // 获取消息列表
-const getChats = (msgs) => ({type: REQ_CHAT_LIST, data: msgs})
+const getChats = ({users, chatMsgs, userId}) => ({type: REQ_CHAT_LIST, data: {users, chatMsgs, userId}})
+// 更新已读消息
+const upDataReadMsg = (num, from, to) => ({type: UPDATA_READ_MSG, data: {num, from, to}})
 // 注册actions方法
 export function register ({username, password, password2, type}) {
 	if (!username || !password) {
@@ -61,8 +68,9 @@ export function register ({username, password, password2, type}) {
 	}
 	return async dispatch => {
 		const { data: res } = await reqRegister({username, password, type})
-		initIo(dispatch, res.data._id)
+		console.log(res)
 		if(res.code === 0) {
+			initIo(dispatch, res.data._id)
 			dispatch(authSuccess(res.data))
 		} else {
 			dispatch(errorMsg(res.msg))
@@ -76,8 +84,8 @@ export function login ({username, password}) {
 	}
 	return async dispatch => {
 		const { data: res } = await reqLogin({username, password})
-		initIo(dispatch, res.data._id)
 		if(res.code === 0) {
+			initIo(dispatch, res.data._id)
 			dispatch(authSuccess(res.data))
 		} else {
 			dispatch(errorMsg(res.msg))
@@ -99,8 +107,8 @@ export function updata (userInfo) {
 export function getUser () {
 	return async dispatch => {
 		const { data: res } = await reqUser()
-		initIo(dispatch, res.user._id)
 		if (res.code === 0) {
+			initIo(dispatch, res.user._id)
 			dispatch(updataSuccess(res.user))
 		} else {
 			dispatch(registerInfo(res.msg))
@@ -121,4 +129,15 @@ export function getList (type) {
 // 发送信息
 export function sendChat ({from, to, content}) {
 		io.socket.emit('sendMsg', {from, to, content})
+}
+// 更新已读消息
+export function upDataMsg (from, to){
+	return async dispatch => {
+		const { data: res } = await updataMsg({from})
+		if (res.code === 0) {
+			dispatch(upDataReadMsg(res.data, from, to))
+		} else {
+			dispatch(upDataReadMsg(0))
+		}
+	}
 }

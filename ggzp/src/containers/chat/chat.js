@@ -1,7 +1,8 @@
 import React, {Component} from 'react'
 import { connect } from 'react-redux'
 import { NavBar, List, InputItem, Grid, Icon } from 'antd-mobile'
-import { sendChat } from '../../redux/action.js'
+import { sendChat, upDataMsg, getUser } from '../../redux/action.js'
+
 
 const Item = List.Item
 class Chat extends Component {
@@ -20,6 +21,11 @@ class Chat extends Component {
 		 '🤝','💪', '🧑‍🦲','😀', '😄','😅', '😍','😴', '🤢','😲', '💩','😈', '🥱','👌', '👍','👎',
 			'🤝','💪', '🧑‍🦲']
 		this.emojis = this.expression.map(val => ({text: val}))
+	}
+	componentWillUnmount () {
+		const target = this.props.match.params.userId
+		const from = this.props.user._id
+		this.props.upDataMsg(target, from)
 	}
 	// 打开表情
 	handleClick = () => {
@@ -57,12 +63,14 @@ class Chat extends Component {
 		const userObj = this.props.Chat.users
 		const id = this.props.match.params.userId
 		const list = []
+		console.log(this.props, 'chatjs')
 		chatList.forEach(val => {
 			if(val.from === id || val.to === id) {
 				list.push(val)
 			}
 		})
 		if (!userObj[id]) {
+			this.props.getUser()
 			return null
 		}
 		return (
@@ -72,29 +80,29 @@ class Chat extends Component {
 					icon={<Icon type='left' />}
 					onLeftClick={() => this.props.history.go(-1)}
 				>{userObj[id].username}</NavBar>
-				<List className='list'>
-					{ 
-						list.map(chat => {
-							if (chat.from === userId) {
-								return <Item
-									key={chat._id}
-									className='text-right'
-									thumb={userObj[chat.from].header}
-								>
-								{chat.content}
-								</Item>
-							} else if (chat.from === id ) {
-								return <Item
-									key={chat._id}
-									thumb={userObj[chat.from].header}
-								>
-								{chat.content}
-								</Item>
-							}
-								
-						})
-					}
-				</List>
+					<List className='list'>
+						{ 
+							list.map(chat => {
+								if (chat.from === userId) {
+									return <Item
+										key={chat._id}
+										className='text-right'
+										thumb={userObj[chat.from].header}
+									>
+									{chat.content}
+									</Item>
+								} else if (chat.from === id ) {
+									return <Item
+										key={chat._id}
+										thumb={userObj[chat.from].header}
+									>
+									{chat.content}
+									</Item>
+								}
+									
+							})
+						}
+					</List>
 				<div className='footer-input'>
 					{this.state.isShow ? <Grid data={this.emojis} onClick={this.emojiClick} columnNum={8}></Grid> : null}
 					<InputItem
@@ -115,5 +123,5 @@ class Chat extends Component {
 }
 export default connect(
 	state => state,
-	{}
+	{ upDataMsg, getUser }
 )(Chat)

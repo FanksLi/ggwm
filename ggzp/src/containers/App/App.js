@@ -58,6 +58,7 @@ class App extends Component {
 	}
 	render () {
 		const { navList } = this
+		const {counts} = this.props.Chat
 		const id = Cookies.get('id')
 		const { type, header, _id } = this.props.user
 		if (!id) {
@@ -92,7 +93,7 @@ class App extends Component {
 					<Route path='/chat/:userId' component={Chat} />
 					<Route component={NotFound} />
 				</Switch>
-				{ nav[0] ? <Footer navList={ this.navList }/> : null}
+				{ nav[0] ? <Footer navList={ this.navList } counts={counts} /> : null}
 			</div>
 		)
 	}
