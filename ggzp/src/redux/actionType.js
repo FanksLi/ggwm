@@ -13,3 +13,9 @@ export const REGISTER_INFO = 'register_info'
 export const REQ_USER_LIST = 'req_user_list'
 // 获取用户列表失败
 export const REQ_USER_LIST_ERR = 'req_user_list_err'
+// 接收信息
+export const RECEIVE_CHAT = 'receive_chat'
+// 获取信息列表
+export const REQ_CHAT_LIST = 'req_chat_list'
+// 更新已读消息
+export const UPDATA_READ_MSG = 'updata_read_msg'

@@ -15,6 +15,7 @@ import Jober from '../jober/jober.js'
 import Boss from '../boss/boss.js'
 import Personal from '../personal/personal.js'
 import NotFound from '../not-found/not-found.js'
+import Chat from '../chat/chat.js'
 import Footer from '../../components/footer-tab/footer-tab.js'
 class App extends Component {
 	navList = [ 
@@ -57,6 +58,7 @@ class App extends Component {
 	}
 	render () {
 		const { navList } = this
+		const {counts} = this.props.Chat
 		const id = Cookies.get('id')
 		const { type, header, _id } = this.props.user
 		if (!id) {
@@ -88,9 +90,10 @@ class App extends Component {
 					{navList.map((nav, index) => <Route path={nav.path} key={index} component={nav.component} />)}
 					<Route path='/joberinfo' component={JoberInfo} />
 					<Route path='/bossinfo' component={BossInfo} />
+					<Route path='/chat/:userId' component={Chat} />
 					<Route component={NotFound} />
 				</Switch>
-				{ nav[0] ? <Footer navList={ this.navList }/> : null}
+				{ nav[0] ? <Footer navList={ this.navList } counts={counts} /> : null}
 			</div>
 		)
 	}

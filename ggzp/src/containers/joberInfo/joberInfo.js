@@ -42,7 +42,6 @@ class joberInfo extends Component {
 	}
 	render () {
 		const {type, header} = this.props.user
-		console.log(this.props.user)
 		if (header) {
 			const path = type === 0 ? '/jober' : '/boss'
 			return <Redirect to={path} />

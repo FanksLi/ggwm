@@ -11,6 +11,7 @@
     "js-cookie": "^2.2.1",
     "prop-type": "0.0.1",
     "prop-types": "^15.7.2",
+    "rc-queue-anim": "^1.8.5",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-redux": "^7.2.2",
@@ -19,6 +20,7 @@
     "redux": "^3.7.2",
     "redux-thunk": "^2.3.0",
     "remove": "^0.1.5",
+    "socket.io-client": "^3.0.4",
     "web-vitals": "^0.2.4"
   },
   "scripts": {
